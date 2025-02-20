@@ -57,7 +57,7 @@ namespace MajdataPlay.Collections
         public void Move(int diff) => Index = (Index + diff).Clamp(0, Count - 1);
         public void SortAndFilter(SongOrder orderBy)
         {
-            if(Type == ChartStorageType.Dan)
+            if (Type == ChartStorageType.Dan)
             {
                 return;
             }
@@ -152,5 +152,18 @@ namespace MajdataPlay.Collections
             public void Dispose() { }
         }
         int _index = 0;
+    }
+
+    public class SongLevelInCollection
+    {
+        public int SongCollectionIndex { get; init; }
+        public string LevelNumber { get; init; }
+        public int LevelIndex { get; init; }
+        public SongLevelInCollection(string levelNumber, int levelIndex, int songCollectionIndex)
+        {
+            LevelNumber = levelNumber;
+            LevelIndex = levelIndex;
+            SongCollectionIndex = songCollectionIndex;
+        }
     }
 }
