@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using MajdataPlay.Collections;
+using MajdataPlay.Extensions;
 using MajdataPlay.Game;
 using MajdataPlay.IO;
 using MajdataPlay.Types;
@@ -175,9 +176,10 @@ namespace MajdataPlay.List
                     desiredListPos = SongStorage.CollectionIndex;
                     break;
                 case CoverListMode.Chart:
-                    var collection = SongStorage.WorkingCollection;
-                    collection.Move(delta);
-                    desiredListPos = collection.Index;
+                    // var collection = SongStorage.WorkingCollection;
+                    // collection.Move(delta);
+                    ;
+                    desiredListPos = (desiredListPos + delta).Clamp(0, songLevelInCollections.Length - 1);
                     break;
             }
             SlideToList(desiredListPos);

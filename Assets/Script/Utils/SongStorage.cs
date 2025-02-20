@@ -22,16 +22,16 @@ namespace MajdataPlay.Utils
         /// <summary>
         /// Current song collection index
         /// </summary>
-        public static int CollectionIndex 
-        { 
+        public static int CollectionIndex
+        {
             get => _collectionIndex;
-            set => _collectionIndex = value.Clamp(0, Collections.Length - 1); 
+            set => _collectionIndex = value.Clamp(0, Collections.Length - 1);
         }
         /// <summary>
         /// Current song collection
         /// </summary>
-        public static SongCollection WorkingCollection 
-        { 
+        public static SongCollection WorkingCollection
+        {
             get
             {
                 if (Collections.IsEmpty())
@@ -56,7 +56,7 @@ namespace MajdataPlay.Utils
                 return;
             }
             var rootPath = MajEnv.ChartPath;
-            var task = GetCollections(rootPath,progressReporter);
+            var task = GetCollections(rootPath, progressReporter);
             var songs = await task;
             if (task.IsFaulted)
             {
@@ -66,7 +66,7 @@ namespace MajdataPlay.Utils
             }
             else
                 Collections = songs;
-            TotalChartCount =  await Collections.ToUniTaskAsyncEnumerable().SumAsync(x => x.Count);
+            TotalChartCount = await Collections.ToUniTaskAsyncEnumerable().SumAsync(x => x.Count);
             MajDebug.Log($"Loaded chart count: {TotalChartCount}");
         }
         static async ValueTask<SongCollection[]> GetCollections(string rootPath, IProgress<ChartScanProgress> progressReporter)
@@ -88,7 +88,7 @@ namespace MajdataPlay.Utils
 
                 tasks.Add(GetCollection(path));
             }
-            
+
             var a = Task.WhenAll(tasks);
             await a;
 
@@ -133,7 +133,7 @@ namespace MajdataPlay.Utils
                 {
                     PropertyNameCaseInsensitive = false
                 });
-                if(dan is null)
+                if (dan is null)
                 {
                     MajDebug.LogError("Failed to load dan file:" + file.FullName);
                     continue;
@@ -143,7 +143,7 @@ namespace MajdataPlay.Utils
                 {
                     // search online first (so can upload score)
                     var songDetail = allcharts.FirstOrDefault(x => x.Hash == hash && x.IsOnline == true);
-                    if (songDetail ==  null)
+                    if (songDetail == null)
                         songDetail = allcharts.FirstOrDefault(x => x.Hash == hash);
                     if (songDetail is not null)
                         danSongs.Add(songDetail);
@@ -158,7 +158,7 @@ namespace MajdataPlay.Utils
                         break;
                     }
                 }
-                if(danSongs.Count == 0)
+                if (danSongs.Count == 0)
                 {
                     MajDebug.LogError("Failed to load dan, songs are empty or unable to find:" + dan.Name);
                     continue;
@@ -209,7 +209,7 @@ namespace MajdataPlay.Utils
             var name = api.Name;
             var collection = SongCollection.Empty(name);
             var apiroot = api.Url;
-            if (string.IsNullOrEmpty(apiroot)) 
+            if (string.IsNullOrEmpty(apiroot))
                 return collection;
 
             var listurl = apiroot + "/maichart/list";
@@ -256,8 +256,8 @@ namespace MajdataPlay.Utils
 
             var searchKey = OrderBy.Keyword;
             var sortType = OrderBy.SortBy;
-            
-            if(string.IsNullOrEmpty(searchKey) && sortType == SortType.Default)
+
+            if (string.IsNullOrEmpty(searchKey) && sortType == SortType.Default)
             {
                 foreach (var collection in Collections)
                     collection.Reset();
@@ -289,5 +289,6 @@ namespace MajdataPlay.Utils
                 tasks[i] = collection.SortAndFilterAsync(OrderBy);
             await Task.WhenAll(tasks);
         }
-    }    
+    }
+    
 }
