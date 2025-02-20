@@ -91,7 +91,8 @@ namespace MajdataPlay.List
             {
                 var song = songs[songIndex];
                 Debug.Log("[x]" + string.Join(", ", song.Levels));
-                for (var levelIndex = 0; levelIndex < song.Levels.Length; levelIndex++) { 
+                for (var levelIndex = 0; levelIndex < song.Levels.Length; levelIndex++)
+                {
                     var level = song.Levels[levelIndex];
                     if (level == null || level == "")
                     {
@@ -101,7 +102,7 @@ namespace MajdataPlay.List
                     {
                         // add to songLevelInCollections
                         Array.Resize(ref songLevelInCollections, songLevelInCollections.Length + 1);
-                        songLevelInCollections[songLevelInCollections.Length - 1] = new SongLevelInCollection(song.Levels[levelIndex], levelIndex,songIndex);
+                        songLevelInCollections[songLevelInCollections.Length - 1] = new SongLevelInCollection(song.Levels[levelIndex], levelIndex, songIndex);
 
                         var obj = Instantiate(CoverSmallPrefab, transform);
                         var coversmall = obj.GetComponent<CoverSmallDisplayer>();
@@ -144,15 +145,16 @@ namespace MajdataPlay.List
                 selectedDifficulty = 6;
             }
             MajInstances.GameManager.SelectedDiff = (ChartLevel)selectedDifficulty;
-            CoverBigDisplayer.SetDifficulty(selectedDifficulty);
+            var level = songLevelInCollections[desiredListPos];
+            var songinfo = songs[level.SongCollectionIndex];
+            // map level index to chart level
+            var chartLevel = (ChartLevel)level.LevelIndex;
+            CoverBigDisplayer.SetDifficulty(level.LevelIndex);
             if (IsChartList)
             {
                 Debug.Log($"[CoverListDisplayer] desiredListPos: {desiredListPos}");
                 Debug.Log($"[CoverListDisplayer] songLevelInCollections.length: {songLevelInCollections.Length}");
-                var level = songLevelInCollections[desiredListPos];
-                var songinfo = songs[level.SongCollectionIndex];
-                // map level index to chart level
-                var chartLevel = (ChartLevel)level.LevelIndex;
+
                 var songScore = MajInstances.ScoreManager.GetScore(songinfo, chartLevel);
                 CoverBigDisplayer.SetMeta(songinfo.Title, songinfo.Artist, songinfo.Designers[level.LevelIndex], songinfo.Levels[level.LevelIndex]);
                 CoverBigDisplayer.SetScore(songScore);
@@ -169,7 +171,7 @@ namespace MajdataPlay.List
 
         public void SlideList(int delta)
         {
-            switch(Mode)
+            switch (Mode)
             {
                 case CoverListMode.Directory:
                     SongStorage.CollectionIndex += delta;
@@ -210,15 +212,15 @@ namespace MajdataPlay.List
             {
                 case CoverListMode.Directory:
                     songs = dirs[desiredListPos];
-                    if(songs.Type == ChartStorageType.List)
+                    if (songs.Type == ChartStorageType.List)
                     {
-                        CoverBigDisplayer.SetMeta(songs.Name, "Count:"+songs.Count, "", "");
+                        CoverBigDisplayer.SetMeta(songs.Name, "Count:" + songs.Count, "", "");
                     }
                     else
                     {
                         CoverBigDisplayer.SetMeta(songs.DanInfo.Name, songs.DanInfo.Description, "", "");
                     }
-                    
+
                     CoverBigDisplayer.SetScore(new MaiScore());
                     SongStorage.CollectionIndex = desiredListPos;
                     break;
@@ -230,11 +232,14 @@ namespace MajdataPlay.List
                     CoverBigDisplayer.SetCover(songinfo);
                     CoverBigDisplayer.SetMeta(songinfo.Title, songinfo.Artist, songinfo.Designers[level.LevelIndex], songinfo.Levels[level.LevelIndex]);
                     CoverBigDisplayer.SetScore(songScore);
+                    CoverBigDisplayer.SetDifficulty(level.LevelIndex);
+
                     chartAnalyzer.AnalyzeSongDetail(songinfo, (ChartLevel)level.LevelIndex).Forget();
 
                     SubInfoDisplayer.RefreshContent(songinfo);
                     GetComponent<PreviewSoundPlayer>().PlayPreviewSound(songinfo);
-                    //SongStorage.WorkingCollection.Index = desiredListPos;
+                    SongStorage.WorkingCollection.Index = level.SongCollectionIndex;
+                    MajInstances.GameManager.SelectedDiff = chartLevel;
                     break;
             }
         }
@@ -249,7 +254,7 @@ namespace MajdataPlay.List
                 var cover = covers[i];
                 if (Mathf.Abs(distance) > 5)
                 {
-                    if(cover.gameObject.activeSelf)
+                    if (cover.gameObject.activeSelf)
                         cover.gameObject.SetActive(false);
                     continue;
                 }
